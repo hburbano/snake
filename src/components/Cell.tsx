@@ -2,13 +2,14 @@ import React, { ReactElement, memo } from 'react'
 
 type Props = {
   val: number
-  key: string
+  pos: string
 }
 
 const Cell = (props: Props): ReactElement => {
+  const { pos, val } = props
   return (
-    <div key={props.key} className="Cell">
-      {props.val}
+    <div key={pos} className="Cell">
+      {val}
     </div>
   )
 }

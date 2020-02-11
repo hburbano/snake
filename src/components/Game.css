@@ -1,16 +1,17 @@
 :root {
   --row-cols: 50;
+  --dimension: 50rem;
   --main-bg-color: coral;
   --main-bo-color: black;
 }
 
 .Board {
-  width: 50rem;
-  height: 50rem;
+  width: var(--dimension);
+  height: var(--dimension);
   display: grid;
   grid-template-columns: repeat(var(--row-cols), 1fr);
   grid-template-rows: repeat(var(--row-cols), 1fr);
-  border: 1px solid red;
+  border: 1px solid var(--main-bo-color);
 }
 
 .Cell {
@@ -18,4 +19,5 @@
   height: 1rem;
   line-height: 1rem;
   font-size: 8px;
+  background-color: var(--main-bg-color);
 }

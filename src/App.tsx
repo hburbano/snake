@@ -9,6 +9,12 @@ const App = () => {
         <h1>Snake Game</h1>
       </header>
       <Game />
+      <footer>
+        Source at{' '}
+        <a className="App-link" href="https://github.com/Nslaver/snake">
+          Github
+        </a>
+      </footer>
     </div>
   )
 }

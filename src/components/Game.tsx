@@ -6,7 +6,7 @@ const Board = (row: number, cols: number, tick: number): ReactElement => {
   const cells = []
   for (let i = 0; i < row; i++) {
     for (let j = 0; j < cols; j++) {
-      const ele = <Cell val={tick} key={`r-${i}-c${j}`} />
+      const ele = <Cell val={tick} pos={`r-${i}-c${j}`} />
       cells.push(ele)
     }
   }
