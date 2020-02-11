@@ -1,16 +1,12 @@
 import React, { useEffect, useState, ReactElement, SetStateAction } from 'react'
+import { Cell } from './Cell'
 import './Game.css'
-
-const Cell = (val: number): ReactElement => {
-  return <div className="Cell">{val}</div>
-}
 
 const Board = (row: number, cols: number, tick: number): ReactElement => {
   const cells = []
-  console.log({ row, cols })
   for (let i = 0; i < row; i++) {
     for (let j = 0; j < cols; j++) {
-      const ele = Cell(tick)
+      const ele = <Cell val={tick} key={`r-${i}-c${j}`} />
       cells.push(ele)
     }
   }
