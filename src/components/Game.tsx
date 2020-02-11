@@ -1,16 +1,24 @@
-import React, { useEffect, useState, ReactElement } from 'react'
+import React, { useEffect, useState, ReactElement, SetStateAction } from 'react'
+import './Game.css'
 
-const Board = (row: number, cols: number): ReactElement => {
+const Cell = (val: number): ReactElement => {
+  return <div className="Cell">{val}</div>
+}
+
+const Board = (row: number, cols: number, tick: number): ReactElement => {
+  const cells = []
   console.log({ row, cols })
-  return (
-    <p>
-      r{row} c{cols}
-    </p>
-  )
+  for (let i = 0; i < row; i++) {
+    for (let j = 0; j < cols; j++) {
+      const ele = Cell(tick)
+      cells.push(ele)
+    }
+  }
+  return <div className="Board">{cells}</div>
 }
 
 const Game = (): ReactElement => {
-  const state = useState({})
+  const [tick, setCount] = useState(0)
   const config = {
     rows: 50,
     cols: 50,
@@ -21,14 +29,17 @@ const Game = (): ReactElement => {
     console.log(event)
   }
 
-  const gameTick = (): void => {
-    console.log('tic-tac')
+  const gameTick = (
+    count: number,
+    setTick: React.Dispatch<SetStateAction<number>>
+  ): void => {
+    setTick((count + 1) % 10)
   }
 
   useEffect(() => {
     document.body.addEventListener('keydown', handleKeyPress)
     window.gameTick = setInterval(() => {
-      gameTick()
+      gameTick(tick, setCount)
     }, config.tickDuration)
 
     // Cleanup subscription on unmount
@@ -36,9 +47,9 @@ const Game = (): ReactElement => {
       document.body.removeEventListener('keydown', handleKeyPress)
       clearInterval(window.gameTick)
     }
-  }, [])
+  }, [config.tickDuration, tick])
 
-  return <div>{Board(config.rows, config.cols)}</div>
+  return <div>{Board(config.rows, config.cols, tick)}</div>
 }
 
 export { Game }

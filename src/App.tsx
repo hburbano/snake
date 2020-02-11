@@ -6,9 +6,9 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Snake App</h1>
-        <Game />
+        <h1>Snake Game</h1>
       </header>
+      <Game />
     </div>
   )
 }

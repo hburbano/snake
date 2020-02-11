@@ -1,0 +1,21 @@
+:root {
+  --row-cols: 50;
+  --main-bg-color: coral;
+  --main-bo-color: black;
+}
+
+.Board {
+  width: 50rem;
+  height: 50rem;
+  display: grid;
+  grid-template-columns: repeat(var(--row-cols), 1fr);
+  grid-template-rows: repeat(var(--row-cols), 1fr);
+  border: 1px solid red;
+}
+
+.Cell {
+  width: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+  font-size: 8px;
+}
