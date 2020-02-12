@@ -1,41 +1,58 @@
-import React, { useEffect, useState, ReactElement, SetStateAction } from 'react'
-import { Cell } from './Cell'
+import React, { useEffect, useState, ReactElement } from 'react'
+import { Board } from './Board'
+import { sumVectors, DIRECTIONS } from '../utils'
 import './Game.css'
 
-const Board = (row: number, cols: number, tick: number): ReactElement => {
-  const cells = []
-  for (let i = 0; i < row; i++) {
-    for (let j = 0; j < cols; j++) {
-      const ele = <Cell val={tick} pos={`r-${i}-c${j}`} />
-      cells.push(ele)
-    }
-  }
-  return <div className="Board">{cells}</div>
-}
-
 const Game = (): ReactElement => {
-  const [tick, setCount] = useState(0)
   const config = {
     rows: 50,
     cols: 50,
     tickDuration: 200,
   }
+  // TODO: Replace with reducer
+  const [head, setHead] = useState<Vector>({
+    X: Math.floor(config.rows / 2),
+    Y: Math.floor(config.cols / 2),
+  })
+  const [direction, setDirection] = useState<Vector>(DIRECTIONS.UP)
 
   const handleKeyPress = (event: KeyboardEvent): void => {
-    console.log(event)
-  }
-
-  const gameTick = (
-    count: number,
-    setTick: React.Dispatch<SetStateAction<number>>
-  ): void => {
-    setTick((count + 1) % 10)
+    if (event.defaultPrevented) {
+      return // Do nothing if the event was already processed
+    }
+    switch (event.key) {
+      case 'Down':
+      case 'ArrowDown':
+        setDirection(DIRECTIONS.DOWN)
+        event.preventDefault()
+        break
+      case 'Up':
+      case 'ArrowUp':
+        setDirection(DIRECTIONS.UP)
+        event.preventDefault()
+        break
+      case 'Left':
+      case 'ArrowLeft':
+        setDirection(DIRECTIONS.LEFT)
+        event.preventDefault()
+        break
+      case 'Right':
+      case 'ArrowRight':
+        setDirection(DIRECTIONS.RIGHT)
+        event.preventDefault()
+        break
+      default:
+        break
+    }
   }
 
   useEffect(() => {
     document.body.addEventListener('keydown', handleKeyPress)
+    const gameTick = (): void => {
+      setHead(sumVectors(direction, head))
+    }
     window.gameTick = setInterval(() => {
-      gameTick(tick, setCount)
+      gameTick()
     }, config.tickDuration)
 
     // Cleanup subscription on unmount
@@ -43,9 +60,13 @@ const Game = (): ReactElement => {
       document.body.removeEventListener('keydown', handleKeyPress)
       clearInterval(window.gameTick)
     }
-  }, [config.tickDuration, tick])
+  }, [config.tickDuration, head])
 
-  return <div>{Board(config.rows, config.cols, tick)}</div>
+  return (
+    <div>
+      <Board rows={config.rows} cols={config.cols} head={head} />
+    </div>
+  )
 }
 
 export { Game }

@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import './App.css'
 import { Game } from './components/Game'
 
-const App = () => {
+const App = (): ReactElement => {
   return (
     <div className="App">
       <header className="App-header">

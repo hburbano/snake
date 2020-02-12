@@ -1,17 +1,15 @@
 import React, { ReactElement, memo } from 'react'
+import './Cell.css'
+import clsx from 'clsx'
 
 type Props = {
-  val: number
   pos: string
+  isHead: boolean
 }
 
 const Cell = (props: Props): ReactElement => {
-  const { pos, val } = props
-  return (
-    <div key={pos} className="Cell">
-      {val}
-    </div>
-  )
+  const { pos, isHead } = props
+  return <div key={pos} className={clsx('Cell', isHead && 'Head')} />
 }
 
 const CellWrapper = memo<Props>(Cell)
