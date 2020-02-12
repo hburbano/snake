@@ -1,6 +1,6 @@
 :root {
   --row-cols: 50;
-  --dimension: 50rem;
+  --dimension: var(--row-cols) rem;
   --main-bg-color: coral;
   --main-bo-color: black;
 }
