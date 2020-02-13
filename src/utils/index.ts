@@ -12,4 +12,7 @@ const sumVectors = (a: Vector, b: Vector): Vector => ({
 
 const overLap = (a: Vector, b: Vector): boolean => a.X === b.X && a.Y === b.Y
 
-export { DIRECTIONS, sumVectors, overLap }
+const opposite = (a: Vector, b: Vector): boolean =>
+  a.X + b.X === 0 && a.Y + b.Y === 0
+
+export { DIRECTIONS, sumVectors, overLap, opposite }
