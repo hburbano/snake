@@ -1,17 +1,18 @@
 import React, { ReactElement } from 'react'
 import { Cell } from './Cell'
-import { overLap } from '../utils'
+import { overLap, onFog } from '../utils'
 
 type Props = {
   rows: number
   cols: number
   head: Vector
   tail: Vector[]
-  fruits: Vector[]
+  food: Vector[]
+  fogLevel: number
 }
 
 const Board = (props: Props): ReactElement => {
-  const { rows, cols, head, tail, fruits } = props
+  const { rows, cols, head, tail, food, fogLevel } = props
   const cells = []
   let x, y
   for (y = 0; y < rows; y++) {
@@ -19,12 +20,14 @@ const Board = (props: Props): ReactElement => {
       const currentCell = { X: x, Y: y }
       const isHead = overLap(currentCell, head)
       const isTail = !!tail.find(section => overLap(currentCell, section))
-      const isFruit = !!fruits.find(section => overLap(currentCell, section))
+      const isFood = !!food.find(section => overLap(currentCell, section))
+      const isFog = onFog(currentCell, cols, rows, fogLevel)
       const ele = (
         <Cell
           isHead={isHead}
           isTail={isTail}
-          isFruit={isFruit}
+          isFood={isFood}
+          isFog={isFog}
           pos={`x-${x}-y${y}`}
         />
       )

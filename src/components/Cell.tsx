@@ -6,11 +6,12 @@ type Props = {
   pos: string
   isHead: boolean
   isTail: boolean
-  isFruit: boolean
+  isFood: boolean
+  isFog: boolean
 }
 
 const Cell = (props: Props): ReactElement => {
-  const { pos, isHead, isTail, isFruit } = props
+  const { pos, isHead, isTail, isFood, isFog } = props
   return (
     <div
       key={pos}
@@ -18,7 +19,8 @@ const Cell = (props: Props): ReactElement => {
         'Cell',
         isHead && 'Head',
         isTail && 'Tail',
-        isFruit && 'Fruit'
+        isFood && 'Food',
+        isFog && 'Fog'
       )}
     />
   )

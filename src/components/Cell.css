@@ -3,17 +3,21 @@
   height: 1rem;
   line-height: 1rem;
   font-size: 8px;
-  background-color: white;
+  background-color: #f9f7f4;
 }
 
 .Head {
-  background-color: red;
+  background-color: #92d863;
 }
 
 .Tail {
-  background-color: blue;
+  background-color: #92d863;
 }
 
-.Fruit {
-  background-color: green;
+.Food {
+  background-color: red;
+}
+
+.Fog {
+  background-color: var(--main-bo-color);
 }

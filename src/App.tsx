@@ -4,10 +4,7 @@ import { Game } from './components/Game'
 
 const App = (): ReactElement => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Snake Game</h1>
-      </header>
+    <div className="App" role="main">
       <Game />
       <footer>
         Source at{' '}
