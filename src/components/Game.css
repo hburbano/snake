@@ -1,8 +1,13 @@
 :root {
   --row-cols: 50;
-  --dimension: var(--row-cols) rem;
+  --dimension: 50rem;
   --main-bg-color: coral;
   --main-bo-color: black;
+  --border: 2rem solid var(--main-bo-color);
+}
+
+.Game {
+  position: relative;
 }
 
 .Board {
@@ -11,5 +16,66 @@
   display: grid;
   grid-template-columns: repeat(var(--row-cols), 1fr);
   grid-template-rows: repeat(var(--row-cols), 1fr);
-  border: 1px solid var(--main-bo-color);
+  border: var(--border);
+}
+
+.GameOver {
+  width: var(--dimension);
+  height: var(--dimension);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  background: rgba(1, 1, 1, 0.5);
+  border: var(--border);
+  position: absolute;
+  top: 0;
+}
+
+.GameOver h1 {
+  color: #7d70ba;
+  width: 100%;
+}
+
+.GameOver button {
+  background-color: #7d70ba;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 2rem;
+}
+
+.Score {
+  position: absolute;
+  top: 0;
+  width: var(--dimension);
+  height: 2rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  color: green;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 2rem;
+}
+
+.Score h1 {
+  font-size: 1.75rem;
+  line-height: 2rem;
+  display: inline;
+  margin: 0;
+}
+
+.Score p {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  display: inline;
+  margin: 0;
+  color: greenyellow;
+}
+
+.Score .HighScore {
+  color: red;
 }
