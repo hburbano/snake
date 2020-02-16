@@ -26,13 +26,14 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  background: rgba(1, 1, 1, 0.5);
+  background: rgba(0, 220, 159, 0.75);
   border: var(--border);
   position: absolute;
   top: 0;
 }
 
 .GameOver h1 {
+  font-size: 5rem;
   color: #7d70ba;
   width: 100%;
 }

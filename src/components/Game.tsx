@@ -16,39 +16,44 @@ type VectorTicks = Vector & {
   ticks: number
 }
 
-const Game = (): ReactElement => {
-  const config = {
-    rows: 50,
-    cols: 50,
-    tickDuration: 50,
-    maxFood: 500,
-    food: { minDuration: 4000, maxDuration: 10000, score: 1 },
-    fogIncrease: 2,
-  }
-  // TODO: Replace with reducer
-  const [head, setHead] = useState<Vector>({
+const config = {
+  rows: 50,
+  cols: 50,
+  tickDuration: 30,
+  maxFood: 1,
+  food: { minDuration: 4000, maxDuration: 10000, score: 1 },
+  fogIncrease: 2,
+}
+
+type State = {
+  head: Vector
+  tail: Vector[]
+  direction: Vector
+  food: VectorTicks[]
+  isPlaying: boolean
+  fogLevel: number
+}
+
+const initialState: State = {
+  head: {
     X: Math.floor(config.rows / 2),
     Y: Math.floor(config.cols / 2),
-  })
-  const [tail, setTail] = useState<Vector[]>([])
-  const [direction, setDirection] = useState<Vector>(DIRECTIONS.UP)
-  const [food, setFood] = useState<VectorTicks[]>([])
+  },
+  tail: [],
+  direction: DIRECTIONS.UP,
+  food: [],
+  isPlaying: true,
+  fogLevel: 0,
+}
+
+const Game = (): ReactElement => {
+  const [state, setState] = useState<State>(initialState)
   const [score, setScore] = useState<number>(0)
   const [highScore, setHighScore] = useState<number>(1)
-  const [isPlaying, setPlay] = useState<boolean>(true)
-  const [fogLevel, setFogLevel] = useState<number>(0)
 
   const reset = (): void => {
-    setHead({
-      X: Math.floor(config.rows / 2),
-      Y: Math.floor(config.cols / 2),
-    })
-    setTail([])
-    setDirection(DIRECTIONS.UP)
-    setFood([])
     setScore(0)
-    setPlay(true)
-    setFogLevel(0)
+    setState(initialState)
   }
 
   const handleKeyPress = (event: KeyboardEvent): void => {
@@ -58,35 +63,35 @@ const Game = (): ReactElement => {
     switch (event.key) {
       case 'Down':
       case 'ArrowDown':
-        if (!opposite(direction, DIRECTIONS.DOWN)) {
-          setDirection(DIRECTIONS.DOWN)
+        if (!opposite(state.direction, DIRECTIONS.DOWN)) {
+          setState({ ...state, direction: DIRECTIONS.DOWN })
         }
         event.preventDefault()
         break
       case 'Up':
       case 'ArrowUp':
-        if (!opposite(direction, DIRECTIONS.UP)) {
-          setDirection(DIRECTIONS.UP)
+        if (!opposite(state.direction, DIRECTIONS.UP)) {
+          setState({ ...state, direction: DIRECTIONS.UP })
         }
         event.preventDefault()
         break
       case 'Left':
       case 'ArrowLeft':
-        if (!opposite(direction, DIRECTIONS.LEFT)) {
-          setDirection(DIRECTIONS.LEFT)
+        if (!opposite(state.direction, DIRECTIONS.LEFT)) {
+          setState({ ...state, direction: DIRECTIONS.LEFT })
         }
         event.preventDefault()
         break
       case 'Right':
       case 'ArrowRight':
-        if (!opposite(direction, DIRECTIONS.RIGHT)) {
-          setDirection(DIRECTIONS.RIGHT)
+        if (!opposite(state.direction, DIRECTIONS.RIGHT)) {
+          setState({ ...state, direction: DIRECTIONS.RIGHT })
         }
         event.preventDefault()
         break
       case 'Enter':
       case 'Space':
-        if (!isPlaying) {
+        if (!state.isPlaying) {
           reset()
           event.preventDefault()
         }
@@ -97,46 +102,56 @@ const Game = (): ReactElement => {
   }
 
   const executeMove = (): void => {
-    let newHead = sumVectors(direction, head)
-    const newTail: Vector[] = [head, ...tail]
-    const newFood = food
+    // Make next move and check collision of newHead with newTail
+    const newTail = [state.head, ...state.tail]
+    let newHead = sumVectors(state.direction, state.head)
+    newTail.pop()
+    let newIsPlaying = !newTail.find(ele => overLap(ele, newHead))
+
+    let newScore = score
+    const newFood = state.food
       .map(fruit => ({
+        // Update the remain time for each fruit
         ...fruit,
         ticks: fruit.ticks - config.tickDuration,
       }))
       .filter(fruit => {
-        const doesOverlap = overLap(head, fruit)
+        // Eat overlapping fruit, remove old fruits.
+        const doesOverlap = overLap(newHead, fruit)
         if (doesOverlap) {
-          const newScore = score + config.food.score
+          newScore = score + config.food.score
           newTail.push(fruit)
-          setScore(newScore)
-          if (newScore > highScore) setHighScore(newScore)
         }
         return fruit.ticks > 0 && !doesOverlap
       })
 
-    newTail.pop()
+    // Check collision with boundaries and set newFog, reverse direction if necessary
     const collides = collisionBoundary(newHead, config.cols, config.rows)
+    let newDirection = state.direction
+    let newFog = state.fogLevel
     if (collides) {
-      const reverseDirection = reverseVector(direction)
-      newTail.reverse()
+      // Reverse direction and tail if any
+      newDirection = reverseVector(newDirection)
       if (newTail.length > 0) {
-        newHead = sumVectors(newTail[0], reverseDirection)
+        newTail.reverse()
+        newHead = sumVectors(newTail[0], newDirection)
       }
-      setDirection(reverseDirection)
-      setFogLevel(fogLevel + config.fogIncrease)
+      newFog += config.fogIncrease
+      if (newFog >= Math.floor(Math.min(config.rows, config.cols) / 2))
+        newIsPlaying = false
     }
 
+    // Calculate position for new fruits/food
     if (newFood.length < config.maxFood) {
       let newFruit: Vector
       let newFruitHasValidLocation = false
       do {
         newFruit = {
-          X: getRandomBetween(fogLevel, config.cols - fogLevel),
-          Y: getRandomBetween(fogLevel, config.rows - fogLevel),
+          X: getRandomBetween(newFog, config.cols - newFog),
+          Y: getRandomBetween(newFog, config.rows - newFog),
         }
         newFruitHasValidLocation =
-          !overLap(head, newFruit) &&
+          !overLap(newHead, newFruit) &&
           !newTail.find(ele => overLap(ele, newFruit))
       } while (!newFruitHasValidLocation)
       newFood.push({
@@ -148,28 +163,32 @@ const Game = (): ReactElement => {
       })
     }
 
-    setHead(newHead)
-    const crash = !!newTail.find(ele => overLap(ele, newHead))
-    if (crash) {
-      clearInterval(window.gameTick)
-      setPlay(false)
+    setScore(newScore)
+    if (newScore > highScore) setHighScore(newScore)
+
+    const newState = {
+      ...state,
+      head: newHead,
+      tail: newTail,
+      food: newFood,
+      isPlaying: newIsPlaying,
+      fogLevel: newFog,
+      direction: newDirection,
     }
-    setTail(newTail)
-    setFood(newFood)
+    setState(newState)
+
+    if (!newState.isPlaying) {
+      clearInterval(window.gameTick)
+    }
   }
 
-  const executeMoveWrap = useCallback(executeMove, [
-    head,
-    food,
-    tail,
-    direction,
-  ])
-  const handleKeyPressWrap = useCallback(handleKeyPress, [direction])
+  const executeMoveWrap = useCallback(executeMove, [state])
+  const handleKeyPressWrap = useCallback(handleKeyPress, [state])
 
   useEffect(() => {
     document.body.addEventListener('keydown', handleKeyPressWrap)
     const gameTick = (): void => {
-      if (isPlaying) executeMoveWrap()
+      if (state.isPlaying) executeMoveWrap()
     }
     window.gameTick = setInterval(() => {
       gameTick()
@@ -179,19 +198,19 @@ const Game = (): ReactElement => {
       document.body.removeEventListener('keydown', handleKeyPressWrap)
       clearInterval(window.gameTick)
     }
-  }, [config.tickDuration, executeMoveWrap, isPlaying, handleKeyPressWrap])
+  }, [executeMoveWrap, handleKeyPressWrap, state])
 
   return (
     <div className="Game">
       <Board
         rows={config.rows}
         cols={config.cols}
-        head={head}
-        tail={tail}
-        food={food}
-        fogLevel={fogLevel}
+        head={state.head}
+        tail={state.tail}
+        food={state.food}
+        fogLevel={state.fogLevel}
       />
-      {!isPlaying && (
+      {!state.isPlaying && (
         <div className="GameOver">
           <h1>GAME OVER</h1>
           <button onClick={reset}>Play Again</button>
